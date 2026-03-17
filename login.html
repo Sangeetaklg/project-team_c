@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VeriNova — Login</title>
+
+  <!-- ─────────────────────────────────────────────────────
+       CLERK SETUP
+       1. Go to https://dashboard.clerk.com
+       2. Create an app → copy your Publishable Key
+       3. Replace YOUR_PUBLISHABLE_KEY below
+          (looks like pk_test_XXXX or pk_live_XXXX)
+  ───────────────────────────────────────────────────── -->
+  <script
+    async
+    crossorigin="anonymous"
+    data-clerk-publishable-key="YOUR_PUBLISHABLE_KEY"
+    src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
+    type="text/javascript"
+  ></script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;800&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Login stylesheet (same folder as this file) -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}"/>
+</head>
+<body>
+
+<!-- Animated Background -->
+<div class="bg-canvas"></div>
+<div class="grid"></div>
+
+<!-- Page -->
+<div class="page">
+
+  <!-- Brand -->
+  <div class="brand">
+    <div class="brand-icon">🛡️</div>
+    <div class="brand-name">Veri<span>Nova</span></div>
+    <div class="brand-tag">India's Fact Checker</div>
+  </div>
+
+  <!-- Login Card -->
+  <div class="card">
+    <div class="glow-ring"></div>
+
+    <div class="card-hdr">
+      <div class="card-title">LOGIN</div>
+      <div class="card-sub">// Authenticate to continue</div>
+    </div>
+
+    <!-- Clerk mounts here when key is set -->
+    <div id="clerk-sign-in"></div>
+
+    <!-- Fallback form — shown when Clerk key is missing or fails to load -->
+    <div id="fallback-form">
+      <div class="social-btns">
+        <button class="btn-social" onclick="alert('Add your Clerk key to enable Google login')">🇬 Google</button>
+        <button class="btn-social" onclick="alert('Add your Clerk key to enable GitHub login')">🐙 GitHub</button>
+      </div>
+      <div class="divider">or</div>
+      <div class="field">
+        <label class="flabel">Email</label>
+        <input class="finput" type="email" id="fbEmail" placeholder="you@example.com"/>
+      </div>
+      <div class="field">
+        <label class="flabel">Password</label>
+        <input class="finput" type="password" id="fbPwd" placeholder="••••••••"/>
+      </div>
+      <div class="row-check">
+        <label class="remember">
+          <input type="checkbox"/> Remember me
+        </label>
+        <a class="forgot" href="#">Forgot password?</a>
+      </div>
+      <button class="btn-login" onclick="fallbackLogin()">LOGIN →</button>
+      <div class="signup-row">
+        Don't have an account? <a href="#" onclick="alert('Add your Clerk key to enable signup')">Sign Up</a>
+      </div>
+    </div>
+
+    <!-- Dev warning — only visible when key is not set -->
+    <div class="key-notice" id="key-notice">
+      ⚠ CLERK KEY NOT SET<br/>
+      Open <strong>templates/login.html</strong> and replace<br/>
+      <strong>YOUR_PUBLISHABLE_KEY</strong> with your key from<br/>
+      dashboard.clerk.com → API Keys
+    </div>
+
+  </div>
+
+  <!-- Back to main app -->
+  <a class="back-link" href="/">Back to VeriNova</a>
+
+</div>
+
+<script>
+  window.addEventListener("load", async () => {
+    const publishableKey = document
+      .querySelector("[data-clerk-publishable-key]")
+      ?.getAttribute("data-clerk-publishable-key");
+
+    // ── No key set → show fallback UI ──
+    if (!publishableKey || publishableKey === "YOUR_PUBLISHABLE_KEY") {
+      document.getElementById("clerk-sign-in").style.display = "none";
+      document.getElementById("fallback-form").style.display = "block";
+      document.getElementById("key-notice").classList.add("show");
+      return;
+    }
+
+    try {
+      await window.Clerk.load();
+
+      // Already signed in → redirect straight to the app
+      if (window.Clerk.user) {
+        window.location.href = "/";
+        return;
+      }
+
+      // Mount Clerk SignIn component with VeriNova cyan theme
+      window.Clerk.mountSignIn(document.getElementById("clerk-sign-in"), {
+        routing: "hash",
+        signUpUrl:      "/login#sign-up",
+        afterSignInUrl: "/",           // ← redirects to Flask app root
+        afterSignUpUrl: "/",
+        appearance: {
+          variables: {
+            colorPrimary:         "#00e5ff",
+            colorBackground:      "transparent",
+            colorText:            "#d8f0ff",
+            colorTextSecondary:   "#4a7a99",
+            colorInputBackground: "rgba(0,0,0,0.4)",
+            colorInputText:       "#d8f0ff",
+            borderRadius:         "8px",
+            fontFamily:           "'Exo 2', sans-serif",
+          },
+          elements: {
+            card:                     "cl-card",
+            rootBox:                  "cl-rootBox",
+            formButtonPrimary:        "cl-formButtonPrimary",
+            socialButtonsBlockButton: "cl-socialButtonsBlockButton",
+            formFieldInput:           "cl-formFieldInput",
+            formFieldLabel:           "cl-formFieldLabel",
+            dividerLine:              "cl-dividerLine",
+            dividerText:              "cl-dividerText",
+            footerActionLink:         "cl-footerActionLink",
+            footerActionText:         "cl-footerActionText",
+          }
+        }
+      });
+
+    } catch (err) {
+      console.warn("Clerk failed to load:", err);
+      document.getElementById("clerk-sign-in").style.display = "none";
+      document.getElementById("fallback-form").style.display = "block";
+      document.getElementById("key-notice").classList.add("show");
+    }
+  });
+
+  // ── Fallback local auth (same system as index.html) ──
+  function simpleHash(str) {
+    var h = 0;
+    for (var i = 0; i < str.length; i++) { h = ((h << 5) - h) + str.charCodeAt(i); h = h & h; }
+    return h.toString(36);
+  }
+
+  function fallbackLogin() {
+    var email = document.getElementById("fbEmail").value.trim();
+    var pwd   = document.getElementById("fbPwd").value;
+    if (!email) return alert("Please enter your email.");
+    if (!pwd)   return alert("Please enter your password.");
+    var users = JSON.parse(localStorage.getItem("vn-users") || "{}");
+    var user  = users[email];
+    if (!user)                            return alert("No account found with this email.");
+    if (user.password !== simpleHash(pwd)) return alert("Incorrect password.");
+    // Store session and redirect to app
+    localStorage.setItem("vn-user", JSON.stringify({ name: user.name, email: email }));
+    window.location.href = "/";
+  }
+</script>
+
+</body>
+</html>
