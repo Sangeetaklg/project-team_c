@@ -1,0 +1,531 @@
+/* ══════════════════════════════════════════
+   VeriNova — Login Page Styles
+   login.css
+   ══════════════════════════════════════════ */
+
+/* ── RESET ── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── CSS VARIABLES ── */
+:root {
+  --bg:      #050a0f;
+  --surface: #080e17;
+  --border:  #0ff2;
+  --glow:    #00e5ff;
+  --glow2:   #0091ff;
+  --text:    #d8f0ff;
+  --muted:   #4a7a99;
+  --accent:  #00e5ff;
+  --red:     #ff4466;
+  --green:   #00ffaa;
+}
+
+/* ── BASE ── */
+html, body {
+  height: 100%;
+  background: var(--bg);
+  font-family: 'Exo 2', sans-serif;
+  color: var(--text);
+  overflow: hidden;
+}
+
+/* ══════════════════════════════════════════
+   ANIMATED BACKGROUND
+   ══════════════════════════════════════════ */
+.bg-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 700px 500px at 20% 50%, rgba(0,229,255,0.04) 0%, transparent 70%),
+    radial-gradient(ellipse 600px 500px at 80% 50%, rgba(0,145,255,0.04) 0%, transparent 70%),
+    #050a0f;
+}
+
+/* Scanlines overlay */
+.bg-canvas::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,229,255,0.012) 2px,
+    rgba(0,229,255,0.012) 4px
+  );
+  pointer-events: none;
+}
+
+/* Animated grid */
+.grid {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background-image:
+    linear-gradient(rgba(0,229,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,229,255,0.04) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+  animation: gridDrift 20s linear infinite;
+}
+
+@keyframes gridDrift {
+  0%   { background-position: 0 0; }
+  100% { background-position: 60px 60px; }
+}
+
+/* ══════════════════════════════════════════
+   PAGE LAYOUT
+   ══════════════════════════════════════════ */
+.page {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+/* ══════════════════════════════════════════
+   BRAND / LOGO
+   ══════════════════════════════════════════ */
+.brand {
+  text-align: center;
+  margin-bottom: 32px;
+  animation: fadeDown 0.6s ease both;
+}
+
+.brand-icon {
+  width: 52px;
+  height: 52px;
+  background: linear-gradient(135deg, var(--glow), var(--glow2));
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  margin-bottom: 14px;
+  box-shadow: 0 0 24px rgba(0,229,255,0.4), 0 0 60px rgba(0,229,255,0.1);
+}
+
+.brand-name {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 2.4rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #fff;
+  line-height: 1;
+}
+
+.brand-name span {
+  color: var(--glow);
+  text-shadow: 0 0 20px var(--glow);
+}
+
+.brand-tag {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.25em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+/* ══════════════════════════════════════════
+   CARD
+   ══════════════════════════════════════════ */
+.card {
+  width: 100%;
+  max-width: 420px;
+  background: rgba(8,14,23,0.85);
+  border: 1px solid rgba(0,229,255,0.18);
+  border-radius: 20px;
+  padding: 40px 36px 36px;
+  position: relative;
+  backdrop-filter: blur(20px);
+  box-shadow:
+    0 0 0 1px rgba(0,229,255,0.06),
+    0 0 40px rgba(0,229,255,0.08),
+    0 0 120px rgba(0,229,255,0.04),
+    0 24px 64px rgba(0,0,0,0.6);
+  animation: fadeUp 0.6s 0.1s ease both;
+}
+
+/* Corner accent brackets */
+.card::before,
+.card::after {
+  content: '';
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-color: var(--glow);
+  border-style: solid;
+  opacity: 0.5;
+}
+
+.card::before {
+  top: -1px;
+  left: -1px;
+  border-width: 2px 0 0 2px;
+  border-radius: 20px 0 0 0;
+}
+
+.card::after {
+  bottom: -1px;
+  right: -1px;
+  border-width: 0 2px 2px 0;
+  border-radius: 0 0 20px 0;
+}
+
+/* Outer glow ring */
+.glow-ring {
+  position: absolute;
+  inset: -30px;
+  border-radius: 36px;
+  background: radial-gradient(ellipse at center, rgba(0,229,255,0.07) 0%, transparent 70%);
+  pointer-events: none;
+  animation: ringPulse 3s ease-in-out infinite;
+}
+
+@keyframes ringPulse {
+  0%, 100% { opacity: 0.6; }
+  50%       { opacity: 1; }
+}
+
+/* ── Card Header ── */
+.card-hdr {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.card-title {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.85rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+.card-sub {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+/* ══════════════════════════════════════════
+   CLERK MOUNT & THEME OVERRIDES
+   ══════════════════════════════════════════ */
+#clerk-sign-in {
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cl-rootBox { width: 100% !important; }
+
+.cl-card {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+  padding: 0 !important;
+}
+
+.cl-headerTitle,
+.cl-headerSubtitle { display: none !important; }
+
+.cl-socialButtonsBlockButton {
+  background: rgba(0,229,255,0.06) !important;
+  border: 1px solid rgba(0,229,255,0.2) !important;
+  color: var(--text) !important;
+  border-radius: 8px !important;
+  font-family: 'Exo 2', sans-serif !important;
+  font-size: 0.88rem !important;
+  transition: all 0.2s !important;
+}
+
+.cl-socialButtonsBlockButton:hover {
+  background: rgba(0,229,255,0.12) !important;
+  border-color: rgba(0,229,255,0.4) !important;
+}
+
+.cl-dividerLine { background: rgba(0,229,255,0.12) !important; }
+
+.cl-dividerText {
+  color: var(--muted) !important;
+  font-family: 'Share Tech Mono', monospace !important;
+  font-size: 0.65rem !important;
+  letter-spacing: 0.15em !important;
+}
+
+.cl-formFieldLabel {
+  font-family: 'Share Tech Mono', monospace !important;
+  font-size: 0.6rem !important;
+  letter-spacing: 0.2em !important;
+  text-transform: uppercase !important;
+  color: var(--muted) !important;
+}
+
+.cl-formFieldInput {
+  background: rgba(0,0,0,0.4) !important;
+  border: 1px solid rgba(0,229,255,0.18) !important;
+  border-radius: 8px !important;
+  color: var(--text) !important;
+  font-family: 'Exo 2', sans-serif !important;
+  font-size: 0.9rem !important;
+  transition: border-color 0.25s !important;
+}
+
+.cl-formFieldInput:focus {
+  border-color: var(--glow) !important;
+  box-shadow: 0 0 0 3px rgba(0,229,255,0.08) !important;
+  outline: none !important;
+}
+
+.cl-formButtonPrimary {
+  background: linear-gradient(135deg, var(--glow), var(--glow2)) !important;
+  border: none !important;
+  border-radius: 8px !important;
+  font-family: 'Rajdhani', sans-serif !important;
+  font-size: 1rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.08em !important;
+  color: #000 !important;
+  box-shadow: 0 0 20px rgba(0,229,255,0.3) !important;
+  transition: opacity 0.2s, transform 0.15s !important;
+}
+
+.cl-formButtonPrimary:hover {
+  opacity: 0.88 !important;
+  transform: translateY(-1px) !important;
+}
+
+.cl-footerActionLink {
+  color: var(--glow) !important;
+  font-family: 'Exo 2', sans-serif !important;
+}
+
+.cl-footerActionText {
+  color: var(--muted) !important;
+  font-family: 'Exo 2', sans-serif !important;
+}
+
+.cl-identityPreviewText { color: var(--text) !important; }
+.cl-identityPreviewEditButtonIcon { color: var(--glow) !important; }
+
+.cl-otpCodeFieldInput {
+  background: rgba(0,0,0,0.4) !important;
+  border: 1px solid rgba(0,229,255,0.18) !important;
+  color: var(--text) !important;
+  border-radius: 6px !important;
+}
+
+/* ══════════════════════════════════════════
+   FALLBACK FORM (shown if Clerk doesn't load)
+   ══════════════════════════════════════════ */
+#fallback-form { display: none; }
+
+.field { margin-bottom: 18px; }
+
+.flabel {
+  display: block;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.finput {
+  width: 100%;
+  background: rgba(0,0,0,0.4);
+  border: 1px solid rgba(0,229,255,0.18);
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.9rem;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.25s, box-shadow 0.25s;
+}
+
+.finput:focus {
+  border-color: var(--glow);
+  box-shadow: 0 0 0 3px rgba(0,229,255,0.08);
+}
+
+.finput::placeholder { color: var(--muted); }
+
+.row-check {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  font-size: 0.82rem;
+}
+
+.remember {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  color: var(--muted);
+}
+
+.remember input[type="checkbox"] {
+  accent-color: var(--glow);
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+}
+
+.forgot {
+  font-size: 0.8rem;
+  color: var(--glow);
+  text-decoration: none;
+  opacity: 0.8;
+}
+
+.forgot:hover { opacity: 1; }
+
+.btn-login {
+  width: 100%;
+  background: linear-gradient(135deg, var(--glow), var(--glow2));
+  border: none;
+  border-radius: 8px;
+  padding: 14px;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #000;
+  cursor: pointer;
+  box-shadow: 0 0 20px rgba(0,229,255,0.3);
+  transition: opacity 0.2s, transform 0.15s;
+  margin-bottom: 20px;
+}
+
+.btn-login:hover {
+  opacity: 0.88;
+  transform: translateY(-1px);
+}
+
+.signup-row {
+  text-align: center;
+  font-size: 0.84rem;
+  color: var(--muted);
+}
+
+.signup-row a {
+  color: var(--glow);
+  text-decoration: none;
+}
+
+.signup-row a:hover { text-decoration: underline; }
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  color: var(--muted);
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(0,229,255,0.12);
+}
+
+.social-btns { display: flex; gap: 10px; }
+
+.btn-social {
+  flex: 1;
+  background: rgba(0,229,255,0.06);
+  border: 1px solid rgba(0,229,255,0.2);
+  border-radius: 8px;
+  padding: 10px;
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.82rem;
+  color: var(--text);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.btn-social:hover {
+  background: rgba(0,229,255,0.12);
+  border-color: rgba(0,229,255,0.4);
+}
+
+/* ══════════════════════════════════════════
+   KEY NOTICE (dev warning)
+   ══════════════════════════════════════════ */
+.key-notice {
+  margin-top: 24px;
+  padding: 12px 16px;
+  background: rgba(255,68,102,0.08);
+  border: 1px solid rgba(255,68,102,0.25);
+  border-radius: 8px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.62rem;
+  color: #ff8899;
+  letter-spacing: 0.05em;
+  line-height: 1.7;
+  display: none;
+}
+
+.key-notice.show { display: block; }
+
+/* ══════════════════════════════════════════
+   BACK LINK
+   ══════════════════════════════════════════ */
+.back-link {
+  margin-top: 24px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.15em;
+  color: var(--muted);
+  text-decoration: none;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 0.2s;
+  animation: fadeUp 0.6s 0.3s ease both;
+}
+
+.back-link:hover { color: var(--glow); }
+.back-link::before { content: '←'; }
+
+/* ══════════════════════════════════════════
+   ANIMATIONS
+   ══════════════════════════════════════════ */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
